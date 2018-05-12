@@ -122,7 +122,7 @@ public class EfficientDocument extends Document {
 	// Can be used for testing
 	// We encourage you to add your own tests here.
 	public static void main(String[] args)
-	{
+	{/*
 	    testCase(new EfficientDocument("This is a test.  How many???  "
                 + "Senteeeeeeeeeences are here... there should be 5!  Right?"),
                 16, 13, 5);
@@ -139,7 +139,7 @@ public class EfficientDocument extends Document {
 		testCase(new EfficientDocument("Sentences?!"), 3, 1, 1);
 		testCase(new EfficientDocument("Lorem ipsum dolor sit amet, qui ex choro quodsi moderatius, nam dolores explicari forensibus ad."),
 		         32, 15, 1);
-		
+		*/
 	}
 	
 

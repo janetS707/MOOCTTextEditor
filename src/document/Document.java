@@ -64,10 +64,32 @@ public abstract class Document {
 	 */
 	protected int countSyllables(String word)
 	{
-		// TODO: Implement this method so that you can call it from the 
-	    // getNumSyllables method in BasicDocument (module 2) and 
-	    // EfficientDocument (module 3).
-	    return 0;
+		//System.out.print("Counting syllables in " + word + "...");
+		int numSyllables = 0;
+		boolean newSyllable = true;
+		String vowels = "aeiouy";
+		char[] cArray = word.toCharArray();
+		
+		for (int i = 0; i < cArray.length; i++)
+		{
+			if (i == cArray.length-1 && Character.toLowerCase(cArray[i]) == 'e'
+			&& newSyllable && numSyllables > 0) 
+			{  //this is the last character in the word and it's an "e" so don't count it
+				numSyllables--;
+			}
+			
+			if (newSyllable && vowels.indexOf(Character.toLowerCase(cArray[i])) >= 0) 
+			{  //this is a vowel
+				newSyllable = false;
+				numSyllables++;
+			}
+			else if (vowels.indexOf(Character.toLowerCase(cArray[i])) < 0) 
+				{  //not a vowel
+					newSyllable = true;
+				}
+		}
+		//System.out.println( "found " + numSyllables);
+		return numSyllables;
 	}
 	
 	/** A method for testing
@@ -78,7 +100,7 @@ public abstract class Document {
 	 * @param sentences The expected number of sentences
 	 * @return true if the test case passed.  False otherwise.
 	 */
-	public static boolean testCase(Document doc, int syllables, int words, int sentences)
+	public static boolean testCase(Document doc, int syllables, int words, int sentences, double score)
 	{
 		System.out.println("Testing text: ");
 		System.out.print(doc.getText() + "\n....");
@@ -86,6 +108,7 @@ public abstract class Document {
 		int syllFound = doc.getNumSyllables();
 		int wordsFound = doc.getNumWords();
 		int sentFound = doc.getNumSentences();
+		double fleschScore = doc.getFleschScore();
 		if (syllFound != syllables) {
 			System.out.println("\nIncorrect number of syllables.  Found " + syllFound 
 					+ ", expected " + syllables);
@@ -99,6 +122,11 @@ public abstract class Document {
 		if (sentFound != sentences) {
 			System.out.println("\nIncorrect number of sentences.  Found " + sentFound 
 					+ ", expected " + sentences);
+			passed = false;
+		}
+		if (fleschScore != score) {
+			System.out.println("\nIncorrect flesch score.  Found " + fleschScore 
+					+ ", expected " + score);
 			passed = false;
 		}
 		
@@ -130,10 +158,39 @@ public abstract class Document {
 	/** return the Flesch readability score of this document */
 	public double getFleschScore()
 	{
-	    // TODO: You will play with this method in week 1, and 
-		// then implement it in week 2
-		double size = text.length();
-	    return size;
+		int numWords = getNumWords();
+		int numSentences = getNumSentences();
+		int numSyllables = getNumSyllables();
+		
+		double term1a = numWords/(double)numSentences;
+		double term1b = 1.015 * term1a;
+		
+		double term2a = numSyllables/(double)numWords;
+		double term2b = 84.6 * term2a;
+		
+		double score = 206.835 - term1b - term2b;
+		
+		double scale = Math.pow(10, 1);
+	    double roundedScore = Math.round(score * scale) / scale;
+		
+	    /*
+		System.out.println("Calculate the Flesch Score");
+		System.out.println("num words =" + numWords);
+		System.out.println("num sentenaces = " + numSentences);
+		System.out.println("num syllables = " + numSyllables);
+		
+		System.out.println("term #1a ... " + numWords + "/" + numSentences + " = " + term1a);
+		System.out.println("term #1b = " + term1b);
+		
+		System.out.println("term #2a ... " + numSyllables + "/" + numWords + " = " + term2a);
+		System.out.println("term #2b = " + term2b);
+		
+		System.out.println("score = " + score);
+		System.out.println("rounded score = " + roundedScore);
+		*/
+		
+	    return roundedScore;
+	   
 	}
 	
 	
