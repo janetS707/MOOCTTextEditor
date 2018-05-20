@@ -37,27 +37,42 @@ public class DocumentBenchmarking {
 		// TODO: Fill in the rest of this method so that it runs two loops
 		// and prints out timing results as described in the assignment 
 		// instructions and following the pseudocode below.
+		
+		System.out.println("NumChars" + "\t" + "BasicTime" + "\t" + "EfficientTime"); 
 		for (int numToCheck = start; numToCheck < numSteps*increment + start; 
 				numToCheck += increment)
 		{
 			// numToCheck holds the number of characters that you should read from the 
 			// file to create both a BasicDocument and an EfficientDocument.  
 			
-			/* Each time through this loop you should:
-			 * 1. Print out numToCheck followed by a tab (\t) (NOT a newline)
-			 * 2. Read numToCheck characters from the file into a String
-			 *     Hint: use the helper method below.
-			 * 3. Time a loop that runs trials times (trials is the variable above) that:
-			 *     a. Creates a BasicDocument 
-			 *     b. Calls fleshScore on this document
-			 * 4. Print out the time it took to complete the loop in step 3 
-			 *      (on the same line as the first print statement) followed by a tab (\t)
-			 * 5. Time a loop that runs trials times (trials is the variable above) that:
-			 *     a. Creates an EfficientDocument 
-			 *     b. Calls fleshScore on this document
-			 * 6. Print out the time it took to complete the loop in step 5 
-			 *      (on the same line as the first print statement) followed by a newline (\n) 
-			 */  
+			String chars = getStringFromFile(textfile, numToCheck);
+			 
+			double totalTime = 0;
+			long startTime = 0;
+			long endTime = 0;
+			double basicDocTime = 0;
+			double efficientDocTime = 0;
+			
+			//Get times for basic document:
+			startTime=System.nanoTime();
+			for (int i = 0; i<trials; i++) {
+				document.BasicDocument basicDoc = new document.BasicDocument(chars);
+				Double basicDocScore = basicDoc.getFleschScore();		
+			}
+			endTime=System.nanoTime();
+			basicDocTime = (endTime - startTime)/100000000.0;
+			
+			//Get times for efficient document:
+			startTime=System.nanoTime();
+			for (int i = 0; i<trials; i++) {
+				document.EfficientDocument efficientDoc = new document.EfficientDocument(chars);
+				Double efficientDocScore = efficientDoc.getFleschScore();
+			}
+			endTime=System.nanoTime();
+			efficientDocTime = (endTime - startTime)/100000000.0;
+			
+			//Print the results
+			System.out.println(numToCheck + "\t\t" + basicDocTime + "\t" + efficientDocTime); 
 			 
 		}
 	

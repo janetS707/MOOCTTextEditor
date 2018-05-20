@@ -52,8 +52,36 @@ public class EfficientDocument extends Document {
 		// OF THIS METHOD.
 		List<String> tokens = getTokens("[!?.]+|[a-zA-Z]+");
 		
-		// TODO: Finish this method.  Remember the countSyllables method from 
-		// Document.  That will come in handy here.  isWord defined above will also help.
+		numSyllables = 0;		
+		numWords = 0;
+		numSentences = 0;
+		int numTokens = tokens.size();
+		
+		
+		for (int i = 0; i < numTokens; i++)
+		{
+			String token = tokens.get(i);
+			//System.out.println("token= " + token);
+			
+			if(isWord(token)) 
+			{
+				numSyllables += countSyllables(token);
+				numWords ++;
+				//System.out.println("num words = " + numWords);
+				
+				if (i == numTokens-1)
+				{
+					//count the last sentence if there is no sentence-ending punctuation
+					numSentences ++;
+					//System.out.println("last sentence found! = " + numSentences);
+				}
+			}
+			else {
+				numSentences ++;
+				//System.out.println("num sentences = " + numSentences);
+				}
+		}
+		
 	}
 
 	
@@ -72,8 +100,8 @@ public class EfficientDocument extends Document {
 	 */
 	@Override
 	public int getNumSentences() {
-		//TODO: write this method.  Hint: It's simple
-		return 0;
+		
+		return numSentences;
 	}
 
 	
@@ -93,8 +121,8 @@ public class EfficientDocument extends Document {
 	 */
 	@Override
 	public int getNumWords() {
-		//TODO: write this method.  Hint: It's simple
-	    return 0;
+		
+	    return numWords;
 	}
 
 
@@ -115,31 +143,28 @@ public class EfficientDocument extends Document {
 	 */
 	@Override
 	public int getNumSyllables() {
-        //TODO: write this method.  Hint: It's simple
-        return 0;
+       
+        return numSyllables;
 	}
 	
 	// Can be used for testing
 	// We encourage you to add your own tests here.
 	public static void main(String[] args)
-	{/*
-	    testCase(new EfficientDocument("This is a test.  How many???  "
-                + "Senteeeeeeeeeences are here... there should be 5!  Right?"),
-                16, 13, 5);
-        testCase(new EfficientDocument(""), 0, 0, 0);
-        testCase(new EfficientDocument("sentence, with, lots, of, commas.!  "
-                + "(And some poaren)).  The output is: 7.5."), 15, 11, 4);
-        testCase(new EfficientDocument("many???  Senteeeeeeeeeences are"), 6, 3, 2); 
-        testCase(new EfficientDocument("Here is a series of test sentences. Your program should "
+	{
+		testCase(new EfficientDocument("This is a test.  How many???  "
+		        + "Senteeeeeeeeeences are here... there should be 5!  Right?"),
+				16, 13, 5, 100.1);
+		testCase(new EfficientDocument(""), 0, 0, 0, 0);
+		testCase(new EfficientDocument("sentence, with, lots, of, commas.!  " + "(And some poaren)).  The output is: 7.5."), 15, 11, 4, 88.7);
+		testCase(new EfficientDocument("many???  Senteeeeeeeeeences are"), 6, 3, 2, 36.1);
+		testCase(new EfficientDocument("Here is a series of test sentences. Your program should "
 				+ "find 3 sentences, 33 words, and 49 syllables. Not every word will have "
 				+ "the correct amount of syllables (example, for example), "
-				+ "but most of them will."), 49, 33, 3);
-		testCase(new EfficientDocument("Segue"), 2, 1, 1);
-		testCase(new EfficientDocument("Sentence"), 2, 1, 1);
-		testCase(new EfficientDocument("Sentences?!"), 3, 1, 1);
-		testCase(new EfficientDocument("Lorem ipsum dolor sit amet, qui ex choro quodsi moderatius, nam dolores explicari forensibus ad."),
-		         32, 15, 1);
-		*/
+				+ "but most of them will."), 49, 33, 3, 70.1);
+		testCase(new EfficientDocument("Segue"), 2, 1, 1, 36.6);
+		testCase(new EfficientDocument("Sentence"), 2, 1, 1, 36.6);
+		testCase(new EfficientDocument("Sentences?!"), 3, 1, 1, -48.0);
+	    testCase(new EfficientDocument("Lorem ipsum dolor sit amet, qui ex choro quodsi moderatius, nam dolores explicari forensibus ad."), 32, 15, 1, 11.1);
 	}
 	
 
