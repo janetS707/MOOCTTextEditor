@@ -15,18 +15,19 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 
     private TrieNode root;
     private int size;
+    private Boolean added;
+    private LinkedList<TrieNode> toDoList;
+	private LinkedList<TrieNode> doneList;
     
 
     public AutoCompleteDictionaryTrie()
 	{
 		root = new TrieNode();
+		size = 0;
 	}
 	
 	
 	/** Insert a word into the trie.
-	 * For the basic part of the assignment (part 2), you should convert the 
-	 * string to all lower case before you insert it. 
-	 * 
 	 * This method adds a word by creating and linking the necessary trie nodes 
 	 * into the trie, as described outlined in the videos for this week. It 
 	 * should appropriately use existing nodes in the trie, only creating new 
@@ -39,7 +40,14 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public boolean addWord(String word)
 	{
-	    //TODO: Implement this method.
+		TrieNode wordNode = getWord(word, "A");
+	    	
+	    if (added) //this word got added into the dictionary
+	    {
+	    	size++;
+	    	return true;
+	    }
+	    
 	    return false;
 	}
 	
@@ -49,18 +57,22 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
 	 */
 	public int size()
 	{
-	    //TODO: Implement this method
-	    return 0;
+	    return this.size;
 	}
 	
 	
 	/** Returns whether the string is a word in the trie, using the algorithm
 	 * described in the videos for this week. */
 	@Override
-	public boolean isWord(String s) 
-	{
-	    // TODO: Implement this method
-		return false;
+	public boolean isWord(String word) 
+	{		
+		TrieNode wordNode = getWord(word, "F");
+		
+    	if (wordNode != null) {
+    		return true;
+    	}
+    	
+	    return false;
 	}
 
 	/** 
@@ -85,38 +97,148 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
      * @return A list containing the up to numCompletions best predictions
      */@Override
      public List<String> predictCompletions(String prefix, int numCompletions) 
-     {
-    	 // TODO: Implement this method
-    	 // This method should implement the following algorithm:
-    	 // 1. Find the stem in the trie.  If the stem does not appear in the trie, return an
-    	 //    empty list
-    	 // 2. Once the stem is found, perform a breadth first search to generate completions
-    	 //    using the following algorithm:
-    	 //    Create a queue (LinkedList) and add the node that completes the stem to the back
-    	 //       of the list.
-    	 //    Create a list of completions to return (initially empty)
-    	 //    While the queue is not empty and you don't have enough completions:
-    	 //       remove the first Node from the queue
-    	 //       If it is a word, add it to the completions list
-    	 //       Add all of its child nodes to the back of the queue
+     {   
+    	//Create a list of completions to return (initially empty)
+    	List<String> predictions = new LinkedList<String>();
+    	TrieNode startingNode = null;
+    	
+    	if (prefix != "") {
+    		// Find the stem in the trie.  
+    		startingNode = getWord(prefix, "P");
+        	
+        	//If the stem does not appear in the trie, return an empty list, 
+        	if (startingNode == null){ //not found
+        		return predictions;
+        	}
+    	}
+        else{
+        		startingNode = root;
+        	}
+    	
+    	//Perform a breadth first search to generate completions...
+	   	//Create a queue (LinkedList) and add the node that completes the stem to the back of the list.
+    	toDoList = new LinkedList<TrieNode>();
+    	toDoList.addLast(startingNode);
+    	doneList = new LinkedList<TrieNode>();
+	   	 
+	   	//Look for predictions
+    	traverse(prefix, numCompletions, predictions);
+     	
     	 // Return the list of completions
-    	 
-         return null;
+    	return predictions;
      }
 
+     
+     /** Do a level traversal from this node down */
+  	private List<String> traverse(String prefix, int numCompletions, List<String> predictions )
+  	{  		
+  		//While the queue is not empty and you don't have enough completions:
+  		if (predictions.size() < numCompletions && toDoList.size() > 0) 
+  		{	  		
+  			//remove the first Node from the to do queue
+  			TrieNode toDoNode = (TrieNode) toDoList.removeFirst();
+  	  		
+  		   	//If it is a word, add it to the completions list
+  			if (toDoNode.endsWord())
+  			{ 
+  				predictions.add(toDoNode.getText());
+  			}
+  			
+  		   	
+  			//Add all of its child nodes to the back of the to do queue
+	  		for (Character c : toDoNode.getValidNextCharacters()) 
+	  		{
+	  			TrieNode child = toDoNode.getChild(c);
+	  			toDoList.addLast(child);
+	  		}
+	  		
+	  		doneList.addLast(toDoNode); //add the current node to the done list
+			
+			traverse(prefix, numCompletions, predictions);
+  		}
+  		return predictions;
+  	}
+     
+     private TrieNode getWord(String word, String searchType) {
+	   added = false;
+	   
+	   if (word == "") {
+		   return null;
+	   }
+	   
+	   String lword = word.toLowerCase();
+		TrieNode current = root;
+	    char[] cArray = lword.toCharArray();
+	    int length = cArray.length;
+	   
+	    
+	    for (int i=0; i < length; i++) {
+	    	char c = cArray[i];
+	    	
+	    	TrieNode nextNode = current.getChild(c);
+	    	
+	    	if (nextNode == null) //this char is not in this dictionary
+	    	{
+	    		if (searchType == "A") 
+	    		{
+	    			nextNode = current.insert(c);
+	    			
+	    			if (nextNode.getText().equalsIgnoreCase(lword))
+	    		    {
+	    				added = true;
+	    				nextNode.setEndsWord(true);
+	    		   		return nextNode;
+	    		    }
+	    		}
+	    		else 
+	    		{
+		    	   	return null;	
+	    		}
+	    	}
+	    	else if(nextNode.getText().equalsIgnoreCase(lword)) //subset word found/added
+		    {
+	    		if (!nextNode.endsWord()) 
+	    		{
+	    			if (searchType == "A") 
+	    			{
+		    			added = true;
+		    			nextNode.setEndsWord(true);
+	    			}
+	    			else if (searchType == "P")
+	    			{
+	    				return nextNode;
+	    			}
+	    		}
+		   		return nextNode;
+		    }
+    		current = nextNode;
+	    }
+	    
+	    if (current.getText().equalsIgnoreCase(lword))
+	    {
+	   		return current;
+	    }
+	    return null;
+   }
+     
  	// For debugging
- 	public void printTree()
+ 	public void printTree(String name)
  	{
+ 		System.out.println(name);
  		printNode(root);
  	}
  	
  	/** Do a pre-order traversal from this node down */
  	public void printNode(TrieNode curr)
  	{
- 		if (curr == null) 
- 			return;
  		
- 		System.out.println(curr.getText());
+ 		if (curr == null) {
+ 			return;
+ 		}
+ 		
+ 		if (curr.endsWord()) {
+ 			System.out.println(curr.getText());
+ 		}
  		
  		TrieNode next = null;
  		for (Character c : curr.getValidNextCharacters()) {
@@ -124,7 +246,4 @@ public class AutoCompleteDictionaryTrie implements  Dictionary, AutoComplete {
  			printNode(next);
  		}
  	}
- 	
-
-	
 }

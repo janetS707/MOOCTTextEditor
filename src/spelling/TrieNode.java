@@ -10,7 +10,7 @@ import java.util.Set;
  */
 class TrieNode {
 	private HashMap<Character, TrieNode> children; 
-	private String text;  // Maybe omit for space
+	private String text;  // holds the word if the node ends a word
 	private boolean isWord;
 	
 	/** Create a new TrieNode */
@@ -49,6 +49,8 @@ class TrieNode {
 	 */
 	public TrieNode insert(Character c)
 	{
+		//printChildren();
+		
 		if (children.containsKey(c)) {
 			return null;
 		}
@@ -62,6 +64,12 @@ class TrieNode {
     public String getText()
 	{
 		return text;
+	}
+    
+    /** Return the text string at this node */
+    public void setText(String word)
+	{
+		this.text = word;
 	}
 	
     /** Set whether or not this node ends a word in the trie. */
@@ -81,6 +89,33 @@ class TrieNode {
 	{
 		return children.keySet();
 	}
+	
+	/** Return the set of characters that have links from this node */
+	public Character getFirstValidCharacter()
+	{
+		Character firstChar = null;
+		Boolean found = false;
+ 		
+		for (Character c : this.getValidNextCharacters()) 
+ 		{
+ 			if (!found) {
+ 				firstChar = c;	
+ 				found = true;
+ 			}
+ 		}
+ 		
+		return firstChar;
+	}
 
+
+	/** Print my children */
+	public void printChildren()
+	{
+		System.out.println("NODE.print... childern: " +  children.toString());
+	}
+	
+	public String toString() { 
+        return getText();
+     } 
 }
 
