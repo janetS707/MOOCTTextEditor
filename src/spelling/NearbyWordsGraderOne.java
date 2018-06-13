@@ -19,11 +19,13 @@ public class NearbyWordsGraderOne {
         }
 
         try {
+        	System.out.println("#### start the test ###");
             Dictionary d = new DictionaryHashSet();
             DictionaryLoader.loadDictionary(d, "test_cases/dict.txt");
             NearbyWords nw = new NearbyWords(d);
 
             List<String> d1 = nw.distanceOne("word", true);
+            System.out.println(d1.toString());
             
             feedback += "** Test 1: distanceOne list size... ";
             feedback += "distanceOne returned " + d1.size() + " words.\n";

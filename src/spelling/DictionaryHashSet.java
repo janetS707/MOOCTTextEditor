@@ -41,6 +41,7 @@ public class DictionaryHashSet implements Dictionary
 	/** Is this a word according to this dictionary? */
     @Override
 	public boolean isWord(String s) {
+    	//System.out.println("checking the dictionary for: " + s);
     	return words.contains(s.toLowerCase());
 	}
 	
